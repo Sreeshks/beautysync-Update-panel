@@ -1,7 +1,10 @@
 import os
 import psycopg2
 from psycopg2.extras import DictCursor
-from datetime import datetime
+from datetime import datetime, timezone, timedelta
+
+# Indian Standard Time (UTC+5:30) — admin panel dates are entered in IST
+IST = timezone(timedelta(hours=5, minutes=30))
 from flask import Flask, request, jsonify, render_template, send_from_directory
 from flask_cors import CORS
 from werkzeug.utils import secure_filename
@@ -460,7 +463,7 @@ def delete_update(campaign_id):
 def mobile_active_update():
     try:
         version_code = request.args.get('version_code', '').strip()
-        current_time = datetime.now().isoformat()
+        current_time = datetime.now(IST).strftime('%Y-%m-%dT%H:%M')
 
         conn = get_db()
         cursor = conn.cursor()
@@ -558,7 +561,7 @@ def mobile_active_update():
 @app.route('/api/stats', methods=['GET'])
 def get_stats():
     try:
-        current_time = datetime.now().isoformat()
+        current_time = datetime.now(IST).strftime('%Y-%m-%dT%H:%M')
         conn = get_db()
         cursor = conn.cursor()
 
